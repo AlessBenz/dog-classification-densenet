@@ -1,0 +1,22 @@
+# data and artifacts
+data/
+DATASET/
+DATASET_SPLIT/
+filtered_dataset/
+runs/
+checkpoints/
+*.pth
+*.pt
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
