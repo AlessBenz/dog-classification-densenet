@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 
 def compute_mean_std(train_dir: str | Path, batch_size: int = 64, num_workers: int = 2) -> Tuple[list[float], list[float]]:
+    """Compute dataset mean/std on the TRAIN split using simple Resize+ToTensor."""
     train_dir = Path(train_dir)
     ds = datasets.ImageFolder(
         root=str(train_dir),
@@ -65,14 +66,26 @@ def make_loaders(
     batch_size: int,
     num_workers: int = 2,
     balanced: bool = False,
+    has_test: bool = True,
 ):
+    """Create ImageFolder datasets + loaders.
+
+    If *has_test* is False (or data_dir/test doesn't exist), returns test_ds/test_loader as None.
+    """
+
     data_dir = Path(data_dir)
     train_tfms, eval_tfms = build_transforms(mean, std)
 
     train_ds = datasets.ImageFolder(root=str(data_dir / "train"), transform=train_tfms)
     val_ds = datasets.ImageFolder(root=str(data_dir / "val"), transform=eval_tfms)
-    test_ds = datasets.ImageFolder(root=str(data_dir / "test"), transform=eval_tfms)
 
+    test_dir = data_dir / "test"
+    if has_test and test_dir.exists():
+        test_ds = datasets.ImageFolder(root=str(test_dir), transform=eval_tfms)
+    else:
+        test_ds = None
+
+    # Optional: balanced sampler (useful if classes are imbalanced after filtering)
     sampler = None
     if balanced:
         targets = torch.tensor(train_ds.targets)
@@ -96,11 +109,16 @@ def make_loaders(
         num_workers=num_workers,
         pin_memory=True,
     )
-    test_loader = DataLoader(
-        test_ds,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=True,
-    )
+
+    if test_ds is not None:
+        test_loader = DataLoader(
+            test_ds,
+            batch_size=batch_size,
+            shuffle=False,
+            num_workers=num_workers,
+            pin_memory=True,
+        )
+    else:
+        test_loader = None
+
     return train_ds, val_ds, test_ds, train_loader, val_loader, test_loader

@@ -4,4 +4,3 @@ tqdm
 numpy
 pyyaml
 matplotlib
-split-folders

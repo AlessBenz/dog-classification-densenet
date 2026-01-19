@@ -3,7 +3,8 @@ seed: 42
 data:
   data_dir: data/split
   num_workers: 2
-  mean: null
+  has_test: true
+  mean: null   # if null, computed from train set (first run) and saved to out_dir
   std: null
 
 train:
@@ -13,14 +14,14 @@ train:
   weight_decay: 0.00001
   label_smoothing: 0.0
   amp: true
-  patience: 20
+  patience: 20   # early stopping, null to disable
 
 model:
   backbone: densenet121
   pretrained: false
-  fine_tune: none
+  fine_tune: none     # none | last_block | all
   dropout: 0.3
   hidden_dim: 512
 
 out:
-  out_dir: runs/scratch
+  out_dir: runs/exp

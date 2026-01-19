@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
 import random
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import numpy as np
 import torch
@@ -15,6 +16,7 @@ def seed_everything(seed: int) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+    # Determinism can slow things down; keep it reasonable
     torch.backends.cudnn.deterministic = False
     torch.backends.cudnn.benchmark = True
 
